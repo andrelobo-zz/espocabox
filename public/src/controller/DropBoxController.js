@@ -1,3 +1,6 @@
+
+
+
         class DropBoxController {
 
         constructor(){
@@ -11,6 +14,7 @@
 
         this.initEvents();
         }
+        
 
 
 
@@ -24,6 +28,7 @@
                         storageBucket: "how-to-75137.appspot.com",
                         messagingSenderId: "235643090726",
                         appId: "1:235643090726:web:372b885e8f4756a0aef3e7"
+                                 
                       };
                       // Initialize Firebase
                       firebase.initializeApp(firebaseConfig);
@@ -37,16 +42,46 @@
                 this.inputFilesEl.click();
         });
 
-        this.inputFilesEl.addEventListener('change', event => {
+                this.inputFilesEl.addEventListener('change', event => {
 
-                this.uploadTask(event.target.files);
+                this.buttonSendFileEl.disable=true;
+
+                this.uploadTask(event.target.files).then (responses => {
+
+                responses.forEach(resp =>{
+
+                        this.getFirebaseRef().push().set(resp.files['input-file']);
+                });
+
+                this.uploadComplete();   
+               
+                }).catch(err=>{
+
+                        this.uploadComplete();  
+                        console.error(err);
+
+                })
 
                 this.modalShow();
-
-                this.inputFilesEl.value ='';
-
-                
+                              
         });
+
+        }
+        
+
+        uploadComplete(){
+
+                this.modalShow(false);
+                this.inputFilesEl.value ='';
+                this.buttonSendFileEl.disable=false;
+
+
+        };
+
+        getFirebaseRef(){
+
+                return firebase.database().ref('files');
+
 
         }
 
@@ -72,7 +107,7 @@
 
                 ajax.onload = event => {
 
-                        this.modalShow(false);
+                        
 
                 try {
 
@@ -88,7 +123,7 @@
 
                 ajax.onerror = event => {
 
-                        this.modalShow(false);
+                        
 
                 reject(event);
 
@@ -377,3 +412,5 @@
                 
 
                 }
+
+                
